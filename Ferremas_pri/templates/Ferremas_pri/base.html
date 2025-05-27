@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <title>FERREMAX</title>
+
+    <!-- Fuentes Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{% url 'inicio' %}">
+                    <img src="{% static 'img/Icono_Ferremas.png' %}" width="120px" alt="martillo básico">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item"><a class="nav-link active" href="{% url 'inicio' %}">Inicio</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'inicio' %}">Productos</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'inicio' %}">Informaciones</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'inicio' %}">Menú</a></li>
+
+                        {% if user.is_authenticated %}
+                            <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Cerrar Sesión</a></li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#myModal">Iniciar Sesión</a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'ver_carrito' %}">
+                                <img src="{% static 'img/Icono_Compra.png' %}" height="30px" alt="Carrito de Compra">
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid">
+            {% block content %}{% endblock %}
+        </div>
+
+        <!-- Modal Login -->
+        <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><span class="glyphicon glyphicon-lock"></span> Login</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" action="{% url 'login' %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Correo Electrónico:</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Contraseña:</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" checked>
+                                <label class="form-check-label">Recordarme</label>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">Iniciar Sesión</button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <p class="mt-2">¿No eres miembro? <a href="{% url 'register' %}">Registrarse</a></p>
+                        <p>¿Olvidaste tu <a href="#">contraseña?</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pie de Página -->
+        <div class="footer">
+            <div class="row p-3">
+                <div class="col-md-3">
+                    <h6 style="color: rgb(88, 38, 20);">CONTACTO</h6>
+                    <p class="text-muted small">
+                        contacto@ferremax.cl<br>
+                        +56 9 1234 5678<br>
+                        +56 9 8765 4321<br>
+                        Av. Central 456, Local 3. Santiago, Chile
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <h6 style="color: rgb(88, 38, 20);">LINKS DE INTERÉS</h6>
+                    <p class="text-muted small">
+                        • Home<br>
+                        • Productos<br>
+                        • Servicios<br>
+                        • Términos y condiciones<br>
+                        • Contacto
+                    </p>
+                </div>
+                <div class="col-md-3">
+                    <h6 style="color: rgb(88, 38, 20)">HORARIOS</h6>
+                    <p class="text-muted small">
+                        Lunes a viernes<br>
+                        09:30 a 14:00 hrs.<br>
+                        15:00 a 18:00 hrs.
+                    </p>
+                    <p class="text-muted small">
+                        Síguenos en:<br>
+                        Facebook / Instagram
+                    </p>
+                </div>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <script>
+        // Pasa las URLs que necesitas desde Django al JS global
+        const urlAgregarAlCarrito = "{% url 'agregar_al_carrito' 0 %}";
+        const urlObtenerContenidoCarrito = "{% url 'obtener_contenido_carrito' %}";
+        </script>
+        <!-- Scripts -->
+        <script src="{% static 'js/carrito.js' %}"></script>
+
+        <!-- Bloque extra para scripts personalizados por página -->
+        {% block extra_scripts %}{% endblock %}
+    </div>
+</body>
+</html>

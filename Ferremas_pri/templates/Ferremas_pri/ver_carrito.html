@@ -1,0 +1,98 @@
+{% extends 'Ferremas_pri/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<h1>Carrito de Compras</h1>
+<div class="container" style="padding: 5%; border-radius: 5%;">
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Precio Unitario</th>
+                <th>Cantidad</th>
+                <th>Total por Producto</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.producto.nombre }}</td>
+                <td>${{ item.producto.precio|floatformat:2 }}</td>
+                <td>{{ item.cantidad }}</td>
+                <td>${{ item.total|floatformat:2 }}</td>
+                {% if item.id %}
+                    <a href="{% url 'eliminar_del_carrito' item.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+                {% else %}
+                    <span class="text-muted">Sin ID</span>
+                {% endif %}
+
+                
+            </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="3"><strong>Total del carrito:</strong></td>
+                <td><strong>${{ total|floatformat:2 }}</strong></td>
+                <td><a href="{% url 'limpiar_carrito' %}" class="btn btn-warning btn-sm">Vaciar Carrito</a></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center">
+        <a href="{% url 'inicio' %}" class="btn btn-secondary">Seguir comprando</a>
+        <div>
+            <p>Total: <strong id="total-compra">{{ total }}</strong></p>
+            <button id="pagar-btn" class="btn btn-primary">Realizar Compra</button>
+            <div id="cargando" style="display:none;">Procesando pago...</div>
+
+            <script>
+                    document.getElementById("btn-pagar").addEventListener("click", async function () {
+                        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+                        const payload = {
+                            commerceId: "123456",
+                            commercePaymentId: "ORDER123",
+                            processorPaymentId: "TXN789",
+                            serviceId: "SERVICE001",
+                            clientId: "CLIENT999"
+                        };
+
+                        try {
+                            const response = await fetch("{% url 'realizar_pago' %}", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "X-CSRFToken": csrftoken
+                                },
+                                body: JSON.stringify(payload)
+                            });
+
+                            const data = await response.json();
+
+                            if (data.status === "AUTHORIZED") {
+                                alert("¡Compra realizada con éxito!");
+                                window.location.href = "{% url 'inicio' %}";
+                            } else {
+                                alert("Error en el pago: " + (data.message || "Inténtalo nuevamente."));
+                            }
+                        } catch (error) {
+                            alert("Ocurrió un error al procesar el pago.");
+                            console.error(error);
+                        }
+                    });
+            </script>
+            <form style="display:none;">{% csrf_token %}</form>
+
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/ver_carrito.js' %}"></script>
+{% endblock %}

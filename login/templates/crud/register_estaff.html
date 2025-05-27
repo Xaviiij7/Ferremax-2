@@ -1,0 +1,10 @@
+{% extends 'Ferremas_pri/base.html' %}
+{% load static %}
+{% block content %}
+  <h2>Registrar Personal</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Registrar</button>
+  </form>
+{% endblock %}

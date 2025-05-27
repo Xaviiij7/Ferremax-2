@@ -1,0 +1,85 @@
+{% extends 'Ferremas_pri/base.html' %}
+{% load static %}
+{% block content %}
+<h1>Nuestros Productos</h1>
+
+<!-- Contador carrito -->
+<div id="carrito-contador" style="font-weight: bold; margin-bottom: 20px;">0</div>
+
+<div class="row">
+    {% for producto in productos %}
+    <div class="p_card" style="background-color: rgba(252, 214, 196, 0.274); border-radius: 5%;" alt="{{ producto.nombre }}">
+        <img src="{{ producto.imagen.url }}" style="max-width: 250px; border-radius: 5%;">
+        <div class="p_container">
+            <h4><b>{{ producto.marca }}</b></h4>
+            <p>{{ producto.nombre }}</p>
+            <p class="product-price-clp" data-price="{{ producto.precio }}">CLP: ${{ producto.precio }}</p>
+            <p class="price">USD: <span class="product-price-usd" id="product-price-usd-{{ producto.id }}"></span></p>
+            <!-- Botón para agregar al carrito con clase y data-id correctos -->
+            <!-- Botón para agregar un producto con data-product-id -->
+            <button class="add-to-cart" data-product-id="123">Agregar al carrito</button>
+
+            <!-- Modal para mostrar contenido del carrito -->
+             <div id="Modal0" class="modal0" style="display:none;"><div>
+            <button class="close-modal">Cerrar</button>
+    <div id="carrito-contenido"></div>
+  </div>
+</div>
+
+<!-- Enlace para abrir el modal -->
+<a href="#Modal0">Ver carrito</a>
+
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+  // Esperamos a que el DOM esté listo
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.add-to-cart').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const productoId = btn.getAttribute('data-product-id');
+        fetch(`/agregar/${productoId}/`, {
+          headers: { 'X-Requested-With': 'XMLHttpRequest' },
+          method: 'GET',
+        })
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('carrito-contador').textContent = data.total_items;
+        })
+        .catch(err => {
+          console.error('Error al agregar al carrito:', err);
+        });
+      });
+    });
+  });
+</script>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'js/carrito.js' %}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Realiza una solicitud AJAX para obtener el precio del dólar
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "{% url 'get_dolar_price' %}", true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            var response = JSON.parse(xhr.responseText);
+            var dolarPrice = response.dolar_price;
+
+            // Actualiza el precio en dólares para cada producto
+            document.querySelectorAll('.product-price-clp').forEach(function (element) {
+                var clpPrice = parseFloat(element.getAttribute('data-price'));
+                var usdPrice = clpPrice / dolarPrice;
+                var productId = element.nextElementSibling.querySelector('.product-price-usd').id.split('-').pop();
+                document.getElementById("product-price-usd-" + productId).innerText = usdPrice.toFixed(2) + " USD";
+            });
+        }
+    };
+    xhr.send();
+});
+</script>
+{% endblock %}
+
